@@ -26,7 +26,6 @@ class VoteViewSet(APIView):
         serializer = VoteSerializer(data=request.data)
         if serializer.is_valid(raise_exception=ValueError):
             created_instance = serializer.create(validated_data=request.data)
-
             try:
                 created_instance.save()
             except IntegrityError:

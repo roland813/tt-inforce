@@ -5,27 +5,13 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=100)
     votes = models.IntegerField(default=0)
 
-    menu_monday = models.TextField(
-        blank=True,
-    )
-    menu_tuesday = models.TextField(
-        blank=True,
-    )
-    menu_wednesday = models.TextField(
-        blank=True,
-    )
-    menu_thursday = models.TextField(
-        blank=True,
-    )
-    menu_friday = models.TextField(
-        blank=True,
-    )
-    menu_saturday = models.TextField(
-        blank=True,
-    )
-    menu_sunday = models.TextField(
-        blank=True,
-    )
+    menu_monday = models.TextField(blank=True,)
+    menu_tuesday = models.TextField(blank=True,)
+    menu_wednesday = models.TextField(blank=True,)
+    menu_thursday = models.TextField(blank=True,)
+    menu_friday = models.TextField(blank=True,)
+    menu_saturday = models.TextField(blank=True,)
+    menu_sunday = models.TextField(blank=True,)
 
 
 class Vote(models.Model):
