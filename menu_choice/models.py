@@ -1,36 +1,52 @@
-from django.db import models, IntegrityError
+from django.db import models
+from restaurant import settings
 
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length=100)
-    votes = models.IntegerField(default=0)
 
-    menu_monday = models.TextField(blank=True,)
-    menu_tuesday = models.TextField(blank=True,)
-    menu_wednesday = models.TextField(blank=True,)
-    menu_thursday = models.TextField(blank=True,)
-    menu_friday = models.TextField(blank=True,)
-    menu_saturday = models.TextField(blank=True,)
-    menu_sunday = models.TextField(blank=True,)
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Menu(models.Model):
+    WEEK_DAYS = [
+        ("Monday", "Mon",),
+        ("Tuesday", "Tue",),
+        ("Wednesday", "Wed"),
+        ("Thursday", "Thu"),
+        ("Friday", "Fri"),
+        ("Saturday", "Sat"),
+        ("Sunday", "Sun"),
+    ]
+
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    day = models.CharField(max_length=50, choices=WEEK_DAYS)
+    content = models.TextField()
+
+    class Meta:
+        unique_together = ("restaurant", "day")
+
+    def __str__(self):
+        return f"{self.day}, {self.restaurant}, {self.content}"
+
+    @property
+    def votes_count(self):
+        return self.vote_set.all().count()
 
 
 class Vote(models.Model):
-    restaurant = models.ForeignKey(
-        to=Restaurant,
+
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='vote'
+        null=True
     )
 
-    def save(self, commit=True, *args, **kwargs):
-        if commit:
-            try:
-                self.restaurant.votes += 1
-                self.restaurant.save()
-                super(Vote, self).save(*args, **kwargs)
+    class Meta:
+        unique_together = ("menu", "user")
 
-            except IntegrityError:
-                self.restaurant.votes -= 1
-                self.restaurant.save()
-                raise IntegrityError
-        else:
-            raise IntegrityError
+    def __str__(self):
+        return f"{self.menu}, {self.user}"
